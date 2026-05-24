@@ -9,7 +9,7 @@ export const connectSocket = () => {
   try {
     // Dynamic import to prevent build issues if package is fetching
     import('socket.io-client').then(({ io }) => {
-      socket = io(import.meta.env.VITE_WS_URL || 'http://localhost:5000', {
+      socket = io(import.meta.env.VITE_WS_URL || 'https://growth-ai-express.vercel.app', {
         transports: ['websocket'],
         reconnectionAttempts: 5,
         reconnectionDelay: 5000,
