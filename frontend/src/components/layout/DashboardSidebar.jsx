@@ -26,7 +26,7 @@ function DashboardSidebar() {
             Command Center
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            API-ready architecture mapping real-time market movements.
+            Real-time market movement workspace.
           </p>
         </div>
 

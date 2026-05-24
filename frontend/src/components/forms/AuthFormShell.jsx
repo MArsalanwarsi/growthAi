@@ -11,7 +11,7 @@ function AuthFormShell({ children, eyebrow, title, subtitle }) {
           <p className="mt-4 text-base leading-7 text-muted-foreground">{subtitle}</p>
         </div>
         <div className="mt-10 grid gap-3">
-          {['Demo session ready', 'No backend calls', 'Enterprise architecture'].map((item) => (
+          {['Secure workspace access', 'Read-only Business demo', 'Tier-based modules'].map((item) => (
             <div key={item} className="glass-panel rounded-lg px-4 py-3 text-sm text-muted-foreground">
               {item}
             </div>

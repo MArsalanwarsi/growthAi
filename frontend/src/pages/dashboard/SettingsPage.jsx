@@ -1,13 +1,15 @@
 import { useState } from 'react';
+import { authApi } from '@/api/authApi';
 import PageHeader from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Tabs } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { Badge } from '@/components/ui/badge';
-import { Key, ShieldAlert, Users, Layers, Sparkles, CreditCard } from 'lucide-react';
+import { Key, ShieldAlert, Users, Sparkles, CreditCard } from 'lucide-react';
 
 const tabs = [
   { value: 'profile', label: 'Profile' },
@@ -24,6 +26,30 @@ function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
   const [apiKey, setApiKey] = useState('gr_live_6f43e...321a');
   const [activeAiProvider, setActiveAiProvider] = useState('gemini');
+  const [message, setMessage] = useState('');
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [profile, setProfile] = useState({
+    name: user?.name || 'Growth Operator',
+    email: user?.email || 'demo@growthradar.ai',
+    company: user?.company || 'Northstar Commerce',
+    country: 'United States',
+  });
+
+  const saveOrganization = async () => {
+    setMessage('');
+
+    if (user?.isDemo) {
+      setMessage('Demo workspace is read-only. Create a paid workspace to save organization changes.');
+      return;
+    }
+
+    try {
+      await authApi.updateProfile({ name: profile.name, company: profile.company });
+      setMessage('Organization profile updated.');
+    } catch (error) {
+      setMessage(error.message || 'Unable to update organization.');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -33,6 +59,7 @@ function SettingsPage() {
         description="Configure account preferences, organization targets, API credentials, team seats, and active intelligence layers."
       />
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+      {message && <p className="rounded-md border border-border/60 bg-muted/30 p-3 text-sm text-muted-foreground">{message}</p>}
 
       <Card className="glass-panel">
         <CardContent className="p-6">
@@ -41,11 +68,11 @@ function SettingsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <label>
                   <span className="mb-2 block text-xs font-semibold text-muted-foreground">Operator Name</span>
-                  <Input defaultValue={user?.name || 'Growth Operator'} className="border-border/50 bg-background/50" />
+                  <Input value={profile.name} onChange={(event) => setProfile({ ...profile, name: event.target.value })} className="border-border/50 bg-background/50" />
                 </label>
                 <label>
                   <span className="mb-2 block text-xs font-semibold text-muted-foreground">Email Address</span>
-                  <Input defaultValue={user?.email || 'demo@growthradar.ai'} className="border-border/50 bg-background/50" />
+                  <Input value={profile.email} readOnly className="border-border/50 bg-background/50" />
                 </label>
               </div>
 
@@ -65,14 +92,14 @@ function SettingsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <label>
                   <span className="mb-2 block text-xs font-semibold text-muted-foreground">Business Name</span>
-                  <Input defaultValue={user?.company || 'Northstar Commerce'} className="border-border/50 bg-background/50" />
+                  <Input value={profile.company} onChange={(event) => setProfile({ ...profile, company: event.target.value })} className="border-border/50 bg-background/50" />
                 </label>
                 <label>
                   <span className="mb-2 block text-xs font-semibold text-muted-foreground">Target Country Focus</span>
-                  <Input defaultValue="United States" className="border-border/50 bg-background/50" />
+                  <Input value={profile.country} onChange={(event) => setProfile({ ...profile, country: event.target.value })} className="border-border/50 bg-background/50" />
                 </label>
               </div>
-              <Button variant="premium" className="mt-2">Update Organization</Button>
+              <Button variant="premium" className="mt-2" onClick={saveOrganization}>Update Organization</Button>
             </div>
           )}
 
@@ -86,7 +113,7 @@ function SettingsPage() {
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">Manage team member access privileges and audit logs.</p>
                 </div>
-                <Button size="sm" variant="premium">Invite Member</Button>
+                <Button size="sm" variant="premium" onClick={() => setInviteOpen(true)}>Invite Member</Button>
               </div>
 
               <div className="space-y-3 pt-3">
@@ -194,6 +221,24 @@ function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite team member">
+        <div className="space-y-4">
+          <Input placeholder="teammate@company.com" />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setInviteOpen(false)}>Cancel</Button>
+            <Button
+              variant="premium"
+              onClick={() => {
+                setInviteOpen(false);
+                setMessage(user?.isDemo ? 'Demo workspace is read-only. Team invites are disabled in demo mode.' : 'Invitation queued.');
+              }}
+            >
+              Send Invite
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   // Bypass for demo-token or verify actual JWT
   if (token.startsWith('demo-token-')) {
     req.user = {
-      id: 'demo-user',
+      id: '000000000000000000000001',
       name: 'Growth Operator',
       email: 'demo@growthradar.ai',
       role: 'Owner',

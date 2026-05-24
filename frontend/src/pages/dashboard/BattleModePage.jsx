@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Crown, ShieldCheck, HelpCircle, Trophy, ArrowRight } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { Crown, ShieldCheck, Trophy } from 'lucide-react';
 import PageHeader from '@/components/common/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import apiClient from '@/api/axiosInstance';
+import { useAuth } from '@/hooks/useAuth';
 
 function BattleModePage() {
   const { items } = useSelector((state) => state.competitors);
+  const { user } = useAuth();
   const [selectedCompId, setSelectedCompId] = useState('comp-1');
   const [battleData, setBattleData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -19,6 +22,10 @@ function BattleModePage() {
     const fetchBattle = async () => {
       setLoading(true);
       try {
+        if (user?.isDemo) {
+          throw new Error('Demo preview');
+        }
+
         const response = await apiClient.post('/ai/battle-mode', {
           competitorName: activeCompetitor.name,
           businessDetails: { name: 'Northstar Commerce', industry: 'Ecommerce SaaS' }
@@ -28,7 +35,7 @@ function BattleModePage() {
         } else {
           throw new Error('Fallback trigger');
         }
-      } catch (e) {
+      } catch {
         // Fallback Premium structured battle metrics
         setBattleData({
           overallWinner: activeCompetitor.name,
@@ -51,7 +58,7 @@ function BattleModePage() {
     };
 
     fetchBattle();
-  }, [selectedCompId, activeCompetitor]);
+  }, [selectedCompId, activeCompetitor, user?.isDemo]);
 
   return (
     <div className="space-y-6">

@@ -1,7 +1,5 @@
-import { ReportModel } from '../models/report.model.js';
-
 export const buildReport = async (name, type, filters = {}) => {
-  const report = await ReportModel.create({
+  return {
     name,
     type,
     status: 'Completed',
@@ -12,9 +10,7 @@ export const buildReport = async (name, type, filters = {}) => {
       opportunitiesFound: 4,
       categoryLeader: 'Vortex Brands'
     }
-  });
-
-  return report;
+  };
 };
 
 export default { buildReport };

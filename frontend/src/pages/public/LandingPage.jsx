@@ -53,7 +53,7 @@ function LandingPage() {
               </Button>
             </div>
             <div className="mt-8 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-              {['Frontend-only demo', 'API-ready structure', 'Dark and light themes'].map((item) => (
+              {['Read-only Business demo', 'Tier-based access', 'Dark and light themes'].map((item) => (
                 <div key={item} className="flex items-center gap-2">
                   <CheckCircle2 className="size-4 text-primary" />
                   {item}
@@ -132,7 +132,7 @@ function LandingPage() {
               {[
                 ['Competitor intelligence', 'Monitor product, pricing, social, SEO, and ads changes.'],
                 ['Social analytics', 'See engagement trends, content mix, audience behavior, and posting cadence.'],
-                ['Business growth advisor', 'Prioritize high-impact moves without connecting AI models yet.'],
+                ['Business growth advisor', 'Prioritize high-impact moves with AI-assisted recommendations.'],
               ].map(([title, description]) => (
                 <div key={title} data-animate="stagger" className="glass-panel rounded-lg p-5">
                   <h3 className="font-semibold">{title}</h3>
@@ -148,7 +148,7 @@ function LandingPage() {
             {[
               { label: 'Signals tracked', value: '1.8M', icon: Zap },
               { label: 'Decision briefs', value: '42K', icon: Sparkles },
-              { label: 'Security-ready UI', value: '100%', icon: ShieldCheck },
+              { label: 'Secure workspace', value: '100%', icon: ShieldCheck },
             ].map((stat) => {
               const Icon = stat.icon
               return (
@@ -168,7 +168,7 @@ function LandingPage() {
               centered
               eyebrow="Pricing"
               title="Start lean, scale into a full intelligence program"
-              description="Plans are frontend previews only, designed for future billing integration."
+              description="Choose the access level that matches your competitor intelligence workflow."
             />
             <div className="mt-12 grid gap-4 lg:grid-cols-3">
               {previewPlans.map((plan) => <PricingCard key={plan.name} plan={plan} />)}
@@ -191,7 +191,7 @@ function LandingPage() {
         </section>
 
         <section id="faq" className="mx-auto max-w-4xl px-4 pb-20 sm:px-6 lg:px-8">
-          <SectionHeader centered eyebrow="FAQ" title="Frontend scope, clear by design" />
+          <SectionHeader centered eyebrow="FAQ" title="Built for growth teams" />
           <div className="mt-10 grid gap-3">
             {faqs.map((faq) => (
               <div key={faq.question} className="rounded-lg border border-border/70 bg-card/70 p-5">

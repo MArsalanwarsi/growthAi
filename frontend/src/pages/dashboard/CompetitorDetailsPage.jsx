@@ -16,7 +16,6 @@ import {
   contentMix,
   engagementTrend,
   seoSnapshot,
-  trafficTrends,
 } from '@/data/mockData';
 import { Sparkles, Megaphone, Globe2, HeartHandshake, Award } from 'lucide-react';
 

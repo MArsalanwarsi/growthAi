@@ -13,7 +13,7 @@ const metricIcons = {
   'Trend Alerts': { icon: Bell, suffix: '', trend: 'warn' },
 };
 
-export const fetchDashboardData = createAsyncThunk('dashboard/fetchData', async (_, { rejectWithValue }) => {
+export const fetchDashboardData = createAsyncThunk('dashboard/fetchData', async () => {
   try {
     const response = await apiClient.get('/analytics/dashboard');
     if (response.success && response.data) {

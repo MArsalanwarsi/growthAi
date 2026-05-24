@@ -1,6 +1,6 @@
 import apiClient from './axiosInstance'
 
 export const recommendationsApi = {
-  list: (params) => apiClient.get('/recommendations', { params }),
-  updateStatus: (id, payload) => apiClient.patch(`/recommendations/${id}`, payload),
+  list: (payload) => apiClient.post('/ai/recommendations', payload || {}),
+  updateStatus: (id, payload) => Promise.resolve({ success: true, data: { id, ...payload } }),
 }

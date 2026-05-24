@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiClient from '@/api/axiosInstance';
-import { demoTokenKey, demoUserKey } from '@/utils/constants';
+import { demoTokenKey, demoUserKey, demoWorkspaceUser } from '@/utils/constants';
 
 const readStoredSession = () => {
   if (typeof window === 'undefined') return { token: null, user: null };
@@ -8,18 +8,26 @@ const readStoredSession = () => {
   const token = localStorage.getItem(demoTokenKey);
   const user = localStorage.getItem(demoUserKey);
 
-  return {
-    token,
-    user: user ? JSON.parse(user) : null,
-  };
+  try {
+    return {
+      token,
+      user: user ? JSON.parse(user) : null,
+    };
+  } catch {
+    localStorage.removeItem(demoTokenKey);
+    localStorage.removeItem(demoUserKey);
+    return { token: null, user: null };
+  }
 };
 
 const persistSession = (user, token) => {
+  if (typeof window === 'undefined') return;
   localStorage.setItem(demoTokenKey, token);
   localStorage.setItem(demoUserKey, JSON.stringify(user));
 };
 
 const clearSession = () => {
+  if (typeof window === 'undefined') return;
   localStorage.removeItem(demoTokenKey);
   localStorage.removeItem(demoUserKey);
 };
@@ -35,20 +43,7 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
     }
     throw new Error(response.message || 'Login failed');
   } catch (error) {
-    // Custom robust fallback if backend is offline/blocked during audit checks
-    console.warn('⚠️ API login failed. Activating secure local fallback auth session.', error.message);
-    const mockSession = {
-      user: {
-        id: 'demo-user',
-        name: credentials.email.split('@')[0] || 'Growth Operator',
-        email: credentials.email || 'demo@growthradar.ai',
-        role: 'Owner',
-        company: 'GrowthRadar Demo'
-      },
-      token: `demo-token-${Date.now()}`
-    };
-    persistSession(mockSession.user, mockSession.token);
-    return mockSession;
+    return rejectWithValue(error.message || 'Unable to log in with those credentials.');
   }
 });
 
@@ -61,23 +56,19 @@ export const signupUser = createAsyncThunk('auth/signup', async (details, { reje
     }
     throw new Error(response.message || 'Registration failed');
   } catch (error) {
-    console.warn('⚠️ API signup failed. Activating secure local fallback auth session.', error.message);
-    const mockSession = {
-      user: {
-        id: 'demo-user',
-        name: details.name || 'Growth Operator',
-        email: details.email || 'demo@growthradar.ai',
-        role: 'Owner',
-        company: details.company || 'GrowthRadar Demo'
-      },
-      token: `demo-token-${Date.now()}`
-    };
-    persistSession(mockSession.user, mockSession.token);
-    return mockSession;
+    return rejectWithValue(error.message || 'Unable to create the workspace.');
   }
 });
 
-export const updateUserTier = createAsyncThunk('auth/updateTier', async (tier, { rejectWithValue }) => {
+export const updateUserTier = createAsyncThunk('auth/updateTier', async (tier, { getState, rejectWithValue }) => {
+  const currentUser = getState().auth.user;
+
+  if (currentUser?.isDemo) {
+    const updatedUser = { ...currentUser, tier: 'Business' };
+    persistSession(updatedUser, getState().auth.token);
+    return updatedUser;
+  }
+
   try {
     const response = await apiClient.patch('/auth/profile', { tier });
     if (response.success && response.data) {
@@ -91,23 +82,15 @@ export const updateUserTier = createAsyncThunk('auth/updateTier', async (tier, {
     }
     throw new Error(response.message || 'Profile update failed');
   } catch (error) {
-    console.warn('⚠️ API profile update failed. Performing local fallback.', error.message);
-    const stored = localStorage.getItem(demoUserKey);
-    let updatedUser = { id: 'demo-user', name: 'Growth Operator', email: 'demo@growthradar.ai', role: 'Owner', company: 'GrowthRadar Demo', tier };
-    if (stored) {
-      updatedUser = { ...JSON.parse(stored), tier };
-    }
-    localStorage.setItem(demoUserKey, JSON.stringify(updatedUser));
-    return updatedUser;
+    return rejectWithValue(error.message || 'Unable to update subscription tier.');
   }
 });
 
-export const fetchMe = createAsyncThunk('auth/fetchMe', async (_, { rejectWithValue }) => {
+export const fetchMe = createAsyncThunk('auth/fetchMe', async () => {
   try {
     const response = await apiClient.get('/auth/me');
     return response.data;
-  } catch (error) {
-    console.warn('⚠️ API me fetch failed. Keeping current session details.', error.message);
+  } catch {
     return storedSession.user;
   }
 });
@@ -124,23 +107,15 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    demoLogin(state, action) {
-      const user = {
-        id: 'demo-user',
-        name: action.payload?.name || 'Growth Operator',
-        email: action.payload?.email || 'demo@growthradar.ai',
-        role: 'Owner',
-        company: action.payload?.company || 'GrowthRadar Demo',
-      };
+    startDemoSession(state) {
+      const user = demoWorkspaceUser;
       const token = `demo-token-${Date.now()}`;
       state.isAuthenticated = true;
       state.user = user;
       state.token = token;
       state.status = 'authenticated';
+      state.error = null;
       persistSession(user, token);
-    },
-    demoSignup(state, action) {
-      this.demoLogin(state, action);
     },
     logout(state) {
       state.isAuthenticated = false;
@@ -154,6 +129,7 @@ const authSlice = createSlice({
     builder
       .addCase(loginUser.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -168,6 +144,7 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -185,9 +162,13 @@ const authSlice = createSlice({
       })
       .addCase(updateUserTier.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateUserTier.rejected, (state, action) => {
+        state.error = action.payload;
       });
   }
 });
 
-export const { demoLogin, demoSignup, logout } = authSlice.actions;
+export const { startDemoSession, logout } = authSlice.actions;
 export default authSlice.reducer;

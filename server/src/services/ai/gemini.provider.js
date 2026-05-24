@@ -50,8 +50,112 @@ export const askGemini = async (prompt, systemInstruction = '', forceFallback = 
  */
 function getFallbackIntelligence(prompt) {
   const normalized = prompt.toLowerCase();
-  
-  if (normalized.includes('discover') || normalized.includes('competitor')) {
+
+  if (
+    normalized.includes('marketing copy')
+    || normalized.includes('copywriter')
+    || normalized.includes('viral hook')
+    || normalized.includes('fields: hook')
+  ) {
+    return {
+      success: true,
+      hook: 'Your competitors are winning attention. Your brand can win the decision.',
+      body: 'Turn the highest-impact competitor gap into a direct campaign: lead with the customer pain point, prove why your workflow removes friction faster, and close with a clear trial CTA. Use short-form social, landing-page proof blocks, and retargeting ads to keep the same message consistent across the funnel.',
+      cta: 'Launch the competitor-gap campaign this week.'
+    };
+  }
+
+  if (
+    normalized.includes('battle')
+    || normalized.includes('head-to-head')
+    || normalized.includes('winner per category')
+    || normalized.includes('versus')
+  ) {
+    return {
+      success: true,
+      overallWinner: "Nova Commerce",
+      gapAnalysis: "Your brand currently trails in social engagement cadence and mobile speed indicators, but holds stronger pricing competitiveness and brand trust reviews.",
+      counterStrategy: "Immediately deploy video testimonial ads to defend brand trust, and launch express payments to eliminate checkout friction.",
+      comparison: {
+        followers: { user: "85K", competitor: "190K", winner: "competitor" },
+        engagement: { user: "1.8%", competitor: "4.2%", winner: "competitor" },
+        postingFrequency: { user: "3/week", competitor: "2/day", winner: "competitor" },
+        pricing: { user: "$49 (More attractive)", competitor: "$65", winner: "user" },
+        reviews: { user: "4.8/5", competitor: "4.2/5", winner: "user" },
+        seoTraffic: { user: "22K", competitor: "78K", winner: "competitor" },
+        ads: { user: "5 active", competitor: "45 active", winner: "competitor" },
+        websiteSpeed: { user: "2.8s", competitor: "1.2s", winner: "competitor" }
+      }
+    };
+  }
+
+  if (normalized.includes('recommend') || normalized.includes('suggestion') || normalized.includes('suggested action')) {
+    return {
+      success: true,
+      suggestions: [
+        {
+          category: "Content",
+          title: "Introduce a High-Hook Short Video Cadence",
+          priority: "High",
+          difficulty: "Medium",
+          impact: 90,
+          reason: "Competitors with video cadences above 2.0x daily average generate 4.8x higher viral coefficient.",
+          action: "Repurpose top blog pieces and FAQs into 15-second Reels with big contrast text overlays in the first 3 seconds.",
+          outcome: "Expect a 30-40% increase in profile traffic and engagement rate within 30 days."
+        },
+        {
+          category: "Website",
+          title: "Streamline Mobile Checkout Interface",
+          priority: "High",
+          difficulty: "High",
+          impact: 95,
+          reason: "Category leaders use slide-out cart drawers with integrated Apple Pay/Google Pay buttons to drop drop-off rates.",
+          action: "Add Shop Pay or direct wallet express payment triggers directly on the product list pages.",
+          outcome: "Expect a 1.2% to 2.4% lift in overall mobile checkout conversion."
+        },
+        {
+          category: "SEO",
+          title: "Target Long-Tail Informational Competitor Gaps",
+          priority: "Medium",
+          difficulty: "Low",
+          impact: 75,
+          reason: "Lumina Labs has missing keyword structures around customer problem definitions that get 5k/mo searches.",
+          action: "Deploy comparison landing pages targeting terms like 'Alternative to [Competitor Name]' or '[Competitor] review comparison'.",
+          outcome: "Expect a reliable stream of high-intent search traffic ready to convert."
+        },
+        {
+          category: "Ads",
+          title: "Test Social Proof Video Creative",
+          priority: "High",
+          difficulty: "Low",
+          impact: 85,
+          reason: "Competitors running ads containing user reviews in the top 20% of their ad stack see 43% lower customer acquisition costs.",
+          action: "Format top Trustpilot reviews into user testimonial text layouts superimposed on real product video recordings.",
+          outcome: "Expect click-through rate improvement by at least 1.5x on standard retargeting ads."
+        }
+      ]
+    };
+  }
+
+  if (
+    normalized.includes('sentiment')
+    || normalized.includes('customer reviews')
+    || normalized.includes('consumer psychologist')
+  ) {
+    return {
+      success: true,
+      marketingAngles: ["Lead with faster support", "Contrast transparent pricing against premium bundles", "Use verified customer proof above the fold"],
+      positioningOpportunities: ["Own the low-friction onboarding message", "Turn competitor complaints into comparison-page sections"],
+      productImprovementIdeas: ["Add live alert hooks", "Shorten dashboard load paths", "Improve mobile checkout speed"],
+      competitorWeaknessExploitationStrategy: "Convert complaint themes into ad hooks and landing-page proof blocks that show faster support, clearer billing, and easier setup."
+    };
+  }
+
+  if (
+    normalized.includes('discover')
+    || normalized.includes('direct competitors')
+    || normalized.includes('competitor discovery')
+  ) {
     return {
       success: true,
       reasoning: "Based on category search keyword overlays, ad pressure tracking, and organic keyword overlap indexes.",
@@ -105,73 +209,6 @@ function getFallbackIntelligence(prompt) {
           whyStrong: "Currently testing micro-influencer seed partnerships with custom landing pages. Growth rate is currently low but rising."
         }
       ]
-    };
-  }
-
-  if (normalized.includes('recommend') || normalized.includes('action')) {
-    return {
-      success: true,
-      suggestions: [
-        {
-          category: "Content",
-          title: "Introduce a High-Hook Short Video Cadence",
-          priority: "High",
-          difficulty: "Medium",
-          impact: 90,
-          reason: "Competitors with video cadences above 2.0x daily average generate 4.8x higher viral coefficient.",
-          action: "Repurpose top blog pieces and FAQs into 15-second Reels with big contrast text overlays in the first 3 seconds.",
-          outcome: "Expect a 30-40% increase in profile traffic and engagement rate within 30 days."
-        },
-        {
-          category: "Website",
-          title: "Streamline Mobile Checkout Interface",
-          priority: "High",
-          difficulty: "High",
-          impact: 95,
-          reason: "Category leaders use slide-out cart drawers with integrated Apple Pay/Google Pay buttons to drop drop-off rates.",
-          action: "Add Shop Pay or direct wallet express payment triggers directly on the product list pages.",
-          outcome: "Expect a 1.2% to 2.4% lift in overall mobile checkout conversion."
-        },
-        {
-          category: "SEO",
-          title: "Target Long-Tail Informational Competitor Gaps",
-          priority: "Medium",
-          difficulty: "Low",
-          impact: 75,
-          reason: "Lumina Labs has missing keyword structures around customer problem definitions that get 5k/mo searches.",
-          action: "Deploy comparison landing pages targeting terms like 'Alternative to [Competitor Name]' or '[Competitor] review comparison'.",
-          outcome: "Expect a reliable stream of high-intent search traffic ready to convert."
-        },
-        {
-          category: "Ads",
-          title: "Test Social Proof Video Creative",
-          priority: "High",
-          difficulty: "Low",
-          impact: 85,
-          reason: "Competitors running ads containing user reviews in the top 20% of their ad stack see 43% lower customer acquisition costs.",
-          action: "Format top Trustpilot reviews into user testimonial text layouts superimposed on real product video recordings.",
-          outcome: "Expect click-through rate improvement by at least 1.5x on standard retargeting ads."
-        }
-      ]
-    };
-  }
-
-  if (normalized.includes('battle') || normalized.includes('versus')) {
-    return {
-      success: true,
-      overallWinner: "Nova Commerce",
-      gapAnalysis: "Your brand currently trails in social engagement cadence and mobile speed indicators, but holds stronger pricing competitiveness and brand trust reviews.",
-      counterStrategy: "Immediately deploy video testimonial ads to defend brand trust, and launch express payments to eliminate checkout friction.",
-      comparison: {
-        followers: { user: "85K", competitor: "190K", winner: "competitor" },
-        engagement: { user: "1.8%", competitor: "4.2%", winner: "competitor" },
-        postingFrequency: { user: "3/week", competitor: "2/day", winner: "competitor" },
-        pricing: { user: "$49 (More attractive)", competitor: "$65", winner: "user" },
-        reviews: { user: "4.8/5", competitor: "4.2/5", winner: "user" },
-        seoTraffic: { user: "22K", competitor: "78K", winner: "competitor" },
-        ads: { user: "5 active", competitor: "45 active", winner: "competitor" },
-        websiteSpeed: { user: "2.8s", competitor: "1.2s", winner: "competitor" }
-      }
     };
   }
 

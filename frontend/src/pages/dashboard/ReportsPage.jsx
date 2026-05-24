@@ -5,41 +5,83 @@ import PageHeader from '@/components/common/PageHeader';
 import MetricCard from '@/components/dashboard/MetricCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { competitorData, monthlyGrowth, reportSections } from '@/data/mockData';
+import { monthlyGrowth, reportSections } from '@/data/mockData';
 import apiClient from '@/api/axiosInstance';
+import { useAuth } from '@/hooks/useAuth';
+
+const demoReports = [
+  { id: 'rep-1', name: 'Q1 Competitor Benchmark', type: 'Full Intelligence', status: 'Complete', createdAt: new Date().toLocaleDateString() },
+  { id: 'rep-2', name: 'Vortex Ad Creative Audit', type: 'Ads Performance', status: 'Complete', createdAt: new Date().toLocaleDateString() },
+];
 
 function ReportsPage() {
-  const [reportsList, setReportsList] = useState([]);
+  const { user } = useAuth();
+  const [reportsList, setReportsList] = useState(demoReports);
   const [title, setTitle] = useState('Q2 Competitor Intelligence Review');
   const [template, setTemplate] = useState('Full Intelligence');
   const [isCompiling, setIsCompiling] = useState(false);
   const [currentReport, setCurrentReport] = useState(null);
+  const [message, setMessage] = useState('');
 
-  // Fetch compiled briefs list
   const fetchReports = async () => {
+    if (user?.isDemo) return;
+
     try {
       const response = await apiClient.get('/reports');
       if (response.success && response.data) {
         setReportsList(response.data);
       }
-    } catch (e) {
-      setReportsList([
-        { id: 'rep-1', name: 'Q1 Competitor Benchmark', type: 'Full Intelligence', status: 'Completed', createdAt: new Date().toLocaleDateString() },
-        { id: 'rep-2', name: 'Vortex Ad Creative Audit', type: 'Ads Performance', status: 'Completed', createdAt: new Date().toLocaleDateString() }
-      ]);
+    } catch (error) {
+      setMessage(error.message || 'Unable to load saved reports.');
     }
   };
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    let ignore = false;
 
-  const handleCompileReport = async (e) => {
-    e.preventDefault();
+    if (!user?.isDemo) {
+      apiClient.get('/reports')
+        .then((response) => {
+          if (!ignore && response.success && response.data) setReportsList(response.data);
+        })
+        .catch((error) => {
+          if (!ignore) setMessage(error.message || 'Unable to load saved reports.');
+        });
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, [user?.isDemo]);
+
+  const buildPreviewReport = () => ({
+    name: title,
+    type: template,
+    status: 'Complete',
+    summary: `Complete ${template} intelligence analysis compiled successfully. Benchmarks reveal category leader Vortex Brands is scaling UGC video ads aggressively. Recommended action: introduce express payments and increase social video publishing cadence.`,
+    data: {
+      timestamp: new Date().toLocaleDateString(),
+      opportunitiesFound: 4,
+      categoryLeader: 'Vortex Brands'
+    }
+  });
+
+  const handleCompileReport = async (event) => {
+    event.preventDefault();
     setIsCompiling(true);
     setCurrentReport(null);
+    setMessage('');
+
+    if (user?.isDemo) {
+      setTimeout(() => {
+        const previewReport = buildPreviewReport();
+        setCurrentReport(previewReport);
+        setMessage('Demo preview generated locally. Create a paid workspace to save reports.');
+        setIsCompiling(false);
+      }, 900);
+      return;
+    }
 
     try {
       const response = await apiClient.post('/reports', { name: title, type: template });
@@ -50,29 +92,9 @@ function ReportsPage() {
         throw new Error('Fallback trigger');
       }
     } catch (error) {
-      setTimeout(() => {
-        // Fallback Premium brief compilation
-        const compiled = {
-          name: title,
-          type: template,
-          status: 'Completed',
-          summary: `Complete ${template} intelligence analysis compiled successfully for Q2. Benchmarks reveal Category leader Vortex Brands is scaling UGC video ads aggressively. Recommended action: introduce express payments and 1.5x social video publishing rates to eliminate competitor advantage.`,
-          data: {
-            timestamp: new Date().toLocaleDateString(),
-            opportunitiesFound: 4,
-            categoryLeader: 'Vortex Brands'
-          }
-        };
-        setCurrentReport(compiled);
-        setReportsList(prev => [
-          { id: `rep-${Date.now()}`, name: title, type: template, status: 'Completed', createdAt: new Date().toLocaleDateString() },
-          ...prev
-        ]);
-      }, 1500);
+      setMessage(error.message || 'Unable to compile this report.');
     } finally {
-      setTimeout(() => {
-        setIsCompiling(false);
-      }, 1500);
+      setIsCompiling(false);
     }
   };
 
@@ -196,15 +218,16 @@ function ReportsPage() {
                 )}
               </Button>
             </form>
+            {message && <p className="rounded-md border border-border/60 bg-muted/30 p-3 text-xs text-muted-foreground">{message}</p>}
 
             <div className="border-t border-border/40 pt-4 space-y-3">
               <span className="text-xs font-semibold text-muted-foreground">Recent Briefs</span>
               <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1 scrollbar-premium">
                 {reportsList.map((rep) => (
-                  <div key={rep.id} className="flex items-center justify-between text-xs p-2.5 rounded-lg border border-border/30 bg-muted/20">
+                  <div key={rep.id || rep._id} className="flex items-center justify-between text-xs p-2.5 rounded-lg border border-border/30 bg-muted/20">
                     <div>
                       <p className="font-semibold text-foreground">{rep.name}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{rep.type} • {rep.createdAt}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{rep.type} - {rep.createdAt ? new Date(rep.createdAt).toLocaleDateString() : 'Today'}</p>
                     </div>
                     <Badge tone="success">{rep.status}</Badge>
                   </div>

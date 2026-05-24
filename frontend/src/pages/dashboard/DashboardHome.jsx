@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Download, RefreshCcw, TrendingUp } from 'lucide-react';
 import { fetchDashboardData } from '@/redux/slices/dashboardSlice';
 import PremiumBarChart from '@/components/charts/PremiumBarChart';
@@ -18,6 +19,7 @@ import { connectSocket, disconnectSocket } from '@/services/socketService';
 
 function DashboardHome() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const dashboard = useSelector((state) => state.dashboard);
   const alerts = useSelector((state) => state.alerts.items);
   const recommendations = useSelector((state) => state.recommendations.items);
@@ -36,6 +38,10 @@ function DashboardHome() {
     dispatch(fetchDashboardData());
   };
 
+  const handleExport = () => {
+    navigate('/dashboard/reports');
+  };
+
   return (
     <div className="space-y-8 pb-10">
       <div className="relative">
@@ -50,7 +56,7 @@ function DashboardHome() {
                 <RefreshCcw className={`size-4 mr-2 ${dashboard.loading ? 'animate-spin' : ''}`} /> 
                 {dashboard.loading ? 'Syncing...' : 'Sync Now'}
               </Button>
-              <Button variant="default" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 px-5 shadow-[0_4px_14px_rgba(99,102,241,0.4)] transition-all hover:-translate-y-0.5">
+              <Button variant="default" onClick={handleExport} className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 px-5 shadow-[0_4px_14px_rgba(99,102,241,0.4)] transition-all hover:-translate-y-0.5">
                 <Download className="size-4 mr-2" /> Export Report
               </Button>
             </div>

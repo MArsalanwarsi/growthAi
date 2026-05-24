@@ -8,6 +8,8 @@ const router = Router();
 const businessSchema = { body: ['name', 'industry', 'websiteUrl'] };
 
 router.post('/', verifyJWT, validate(businessSchema), createBusiness);
+router.get('/', verifyJWT, getBusiness);
+router.patch('/', verifyJWT, patchBusiness);
 router.get('/:id', verifyJWT, getBusiness);
 router.patch('/:id', verifyJWT, patchBusiness);
 

@@ -1,9 +1,13 @@
 import { Check } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
 function PricingCard({ plan }) {
+  const targetPlan = plan.tier || (plan.name === 'Enterprise' ? 'Business' : plan.name)
+  const ctaHref = `/signup?plan=${encodeURIComponent(targetPlan)}`
+
   return (
     <Card className={cn(plan.featured && 'border-primary/60 bg-primary/8 shadow-[0_24px_80px_rgba(20,184,166,0.16)]')}>
       <CardContent className="p-6">
@@ -16,7 +20,9 @@ function PricingCard({ plan }) {
           <span className="text-4xl font-semibold">{plan.price}</span>
           {plan.price.startsWith('$') && <span className="pb-1 text-sm text-muted-foreground">/mo</span>}
         </div>
-        <Button className="mt-6 w-full" variant={plan.featured ? 'premium' : 'outline'}>{plan.cta}</Button>
+        <Button asChild className="mt-6 w-full" variant={plan.featured ? 'premium' : 'outline'}>
+          <Link to={ctaHref}>{plan.cta}</Link>
+        </Button>
         <ul className="mt-6 space-y-3">
           {plan.features.map((feature) => (
             <li key={feature} className="flex gap-3 text-sm text-muted-foreground">

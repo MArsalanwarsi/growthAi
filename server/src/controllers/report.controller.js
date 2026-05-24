@@ -16,7 +16,7 @@ export const createReport = asyncHandler(async (req, res) => {
     type: type || 'Full Intelligence',
     status: 'Complete',
     summary: generatedData.summary || 'Compiled strategic insights.',
-    data: generatedData
+    data: generatedData.data || generatedData
   });
   await report.save();
 

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { demoLogin, demoSignup, logout } from '@/redux/slices/authSlice'
+import { loginUser, logout, signupUser, startDemoSession } from '@/redux/slices/authSlice'
 
 export function useAuth() {
   const dispatch = useDispatch()
@@ -7,8 +7,9 @@ export function useAuth() {
 
   return {
     ...auth,
-    login: (payload) => dispatch(demoLogin(payload)),
-    signup: (payload) => dispatch(demoSignup(payload)),
+    login: (payload) => dispatch(loginUser(payload)),
+    signup: (payload) => dispatch(signupUser(payload)),
+    startDemo: () => dispatch(startDemoSession()),
     logout: () => dispatch(logout()),
   }
 }

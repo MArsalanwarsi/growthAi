@@ -3,6 +3,8 @@ export function formatNumber(value) {
 }
 
 export function formatCompactNumber(value) {
+  if (typeof value === 'string') return value
+
   return new Intl.NumberFormat('en', {
     notation: 'compact',
     maximumFractionDigits: 1,

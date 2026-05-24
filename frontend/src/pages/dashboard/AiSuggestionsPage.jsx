@@ -6,13 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Sparkles, ArrowUpRight, CheckCircle2, AlertTriangle, Play, RefreshCcw } from 'lucide-react';
+import { Sparkles, ArrowUpRight, CheckCircle2, Play, RefreshCcw } from 'lucide-react';
 import apiClient from '@/api/axiosInstance';
+import { useAuth } from '@/hooks/useAuth';
 
 const categories = ['Content', 'Website', 'SEO', 'Ads', 'Business'];
 
 function AiSuggestionsPage() {
   const dispatch = useDispatch();
+  const { user } = useAuth();
   const { items, loading } = useSelector((state) => state.recommendations);
   const [activeCategory, setActiveCategory] = useState('Content');
   const [copyOutput, setCopyOutput] = useState('');
@@ -29,6 +31,15 @@ function AiSuggestionsPage() {
   const handleGenerateCopy = async (rec) => {
     setCopyLoading(true);
     setCopyOutput('');
+
+    if (user?.isDemo) {
+      setTimeout(() => {
+        setCopyOutput(`Demo copy preview: Turn ${rec.title.toLowerCase()} into a focused campaign with a clear pain-point hook, concise proof, and a direct trial CTA.`);
+        setCopyLoading(false);
+      }, 600);
+      return;
+    }
+
     try {
       const response = await apiClient.post('/ai/content', {
         channel: rec.category,
@@ -36,11 +47,12 @@ function AiSuggestionsPage() {
         tone: 'Professional & Actionable'
       });
       if (response.success && response.data) {
-        setCopyOutput(response.data.body || JSON.stringify(response.data));
+        const generated = [response.data.hook, response.data.body, response.data.cta].filter(Boolean).join('\n\n');
+        setCopyOutput(generated || JSON.stringify(response.data));
       } else {
         setCopyOutput('AI content successfully generated! Review competitor deflection metrics for the high-impact CTA loop.');
       }
-    } catch (error) {
+    } catch {
       setCopyOutput('DTC Social Hook: "Why pay 3x for competitor services when you get transparent, sub-5-minute human support guarantees?" Start free today.');
     } finally {
       setCopyLoading(false);

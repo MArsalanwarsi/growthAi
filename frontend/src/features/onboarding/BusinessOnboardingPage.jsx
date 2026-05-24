@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/common/PageHeader';
@@ -12,6 +12,14 @@ import { Shield, Server, Search, BarChart3, BrainCircuit, CheckCircle2 } from 'l
 
 import { businessApi } from '@/api/businessApi';
 import { competitorsApi } from '@/api/competitorsApi';
+
+const scanPipelines = [
+  { text: 'Connecting to Instagram Graph API and fetching engagement benchmarks...', icon: Search },
+  { text: 'Analyzing Meta Ad Library spend signals and creatives...', icon: BarChart3 },
+  { text: 'Scanning site SEO organic keyword overlap clusters...', icon: Server },
+  { text: 'Parsing TikTok sentiment indices and feedback...', icon: Shield },
+  { text: 'Executing competitor discovery gap modeling engine...', icon: BrainCircuit },
+];
 
 const steps = [
   {
@@ -53,6 +61,7 @@ function BusinessOnboardingPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const onboarding = useSelector((state) => state.user.onboarding);
+  const authUser = useSelector((state) => state.auth.user);
   
   const [form, setForm] = useState({
     businessName: 'Northstar Commerce',
@@ -78,14 +87,6 @@ function BusinessOnboardingPage() {
   const currentStep = onboarding.currentStep;
   const progress = ((currentStep + 1) / steps.length) * 100;
   
-  const scanPipelines = [
-    { text: 'Connecting to Instagram Graph API & fetching engagement benchmarks...', icon: Search },
-    { text: 'Analyzing Meta Ad Library spend signals & creatives...', icon: BarChart3 },
-    { text: 'Scanning site SEO organic keyword overlap clusters...', icon: Server },
-    { text: 'Parsing TikTok sentiment indices and feedback...', icon: Shield },
-    { text: 'Executing competitor discovery gap modeling engine...', icon: BrainCircuit }
-  ];
-
   const updateField = (key, value) => {
     setForm(prev => ({ ...prev, [key]: value }));
     dispatch(updateOnboardingData({ [key]: value }));
@@ -130,6 +131,12 @@ function BusinessOnboardingPage() {
 
     const triggerBackendCalls = async () => {
       try {
+        if (authUser?.isDemo) {
+          apiCompleted = true;
+          checkCompletion();
+          return;
+        }
+
         const payload = {
           name: form.businessName,
           industry: form.category,
@@ -201,7 +208,7 @@ function BusinessOnboardingPage() {
     runScanAnimations(0);
 
     return () => clearTimeout(timer);
-  }, [isScanning]);
+  }, [authUser?.isDemo, dispatch, form, isScanning, navigate]);
 
   if (isScanning) {
     const CurrentIcon = scanPipelines[scanStep].icon;
@@ -261,7 +268,7 @@ function BusinessOnboardingPage() {
       <PageHeader
         eyebrow="Business onboarding"
         title="Calibrate GrowthRadar around your market"
-        description="This multi-step flow gathers the future API payload for social channels, competitor keywords, budget, and growth goals."
+        description={authUser?.isDemo ? 'Read-only demo mode lets you review the full onboarding experience without saving data.' : 'This multi-step flow saves your market, channels, competitor keywords, budget, and growth goals.'}
       />
 
       <Card className="glass-panel">

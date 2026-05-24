@@ -20,8 +20,8 @@ function Footer() {
         <div>
           <h3 className="text-sm font-semibold">Company</h3>
           <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
-            <span>Security-ready frontend</span>
-            <span>API prepared</span>
+            <span>Secure workspaces</span>
+            <span>Plan-based access</span>
             <span>{brand.supportEmail}</span>
           </div>
         </div>

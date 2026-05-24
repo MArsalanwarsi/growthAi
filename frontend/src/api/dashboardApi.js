@@ -1,7 +1,7 @@
 import apiClient from './axiosInstance'
 
 export const dashboardApi = {
-  getOverview: () => apiClient.get('/dashboard/overview'),
-  getMetrics: (params) => apiClient.get('/dashboard/metrics', { params }),
-  getTrends: (params) => apiClient.get('/dashboard/trends', { params }),
+  getOverview: () => apiClient.get('/analytics/dashboard'),
+  getMetrics: () => apiClient.get('/analytics/growth-score'),
+  getTrends: () => apiClient.get('/analytics/predictions'),
 }

@@ -1,7 +1,7 @@
 import PageHeader from '@/components/common/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, DollarSign, Users, FileText, Activity } from 'lucide-react';
+import { DollarSign, Users, FileText, Activity } from 'lucide-react';
 
 const opportunityGaps = [
   {

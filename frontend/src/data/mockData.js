@@ -160,11 +160,11 @@ export const opportunities = [
 ]
 
 export const pricingPlans = [
-  { name: 'Free', price: '$0', description: 'Validate the radar workflow.', features: ['3 competitors', 'Weekly growth brief', 'Basic social snapshots'], cta: 'Start free' },
-  { name: 'Starter', price: '$39', description: 'For early growth teams.', features: ['10 competitors', 'Daily alerts', 'SEO and social trends'], cta: 'Start Starter' },
-  { name: 'Pro', price: '$99', description: 'For serious operators.', features: ['50 competitors', 'AI suggestion board', 'Battle mode', 'PDF-style reports'], cta: 'Start Pro', featured: true },
-  { name: 'Business', price: '$249', description: 'For multi-brand teams.', features: ['Unlimited scans', 'Market opportunities', 'Team settings', 'Priority support'], cta: 'Contact sales' },
-  { name: 'Enterprise', price: 'Custom', description: 'For global intelligence programs.', features: ['Custom sources', 'SSO-ready architecture', 'Dedicated workspace', 'Security review'], cta: 'Book demo' },
+  { name: 'Free', tier: 'Free', price: '$0', description: 'Validate the radar workflow.', features: ['3 competitors', 'Weekly growth brief', 'Basic social snapshots'], cta: 'Start free' },
+  { name: 'Starter', tier: 'Starter', price: '$39', description: 'For early growth teams.', features: ['10 competitors', 'Daily alerts', 'SEO and social trends'], cta: 'Start Starter' },
+  { name: 'Pro', tier: 'Pro', price: '$99', description: 'For serious operators.', features: ['50 competitors', 'AI suggestion board', 'Battle mode', 'PDF-style reports'], cta: 'Start Pro', featured: true },
+  { name: 'Business', tier: 'Business', price: '$249', description: 'For multi-brand teams.', features: ['Unlimited scans', 'Market opportunities', 'Team settings', 'Priority support'], cta: 'Start Business' },
+  { name: 'Enterprise', tier: 'Business', price: 'Custom', description: 'For global intelligence programs.', features: ['Custom sources', 'SSO-ready architecture', 'Dedicated workspace', 'Security review'], cta: 'Book demo' },
 ]
 
 export const testimonials = [
@@ -174,9 +174,9 @@ export const testimonials = [
 ]
 
 export const faqs = [
-  { question: 'Is this connected to real AI yet?', answer: 'No. This implementation is frontend-only with professional placeholders for future API and AI integration.' },
-  { question: 'Can protected pages be previewed?', answer: 'Yes. Demo login and signup create a local mock session so the product can be explored end to end.' },
-  { question: 'Is the API layer ready for a backend?', answer: 'Yes. Axios instances and API modules are separated from UI components and token-ready.' },
+  { question: 'Can I preview the full product?', answer: 'Yes. The Business demo opens a read-only workspace with every module visible for review.' },
+  { question: 'How do plans control access?', answer: 'Free, Starter, Pro, and Business accounts unlock modules according to the selected subscription tier.' },
+  { question: 'Can my team use saved workflows?', answer: 'Yes. Real accounts use authenticated API sessions for onboarding, reports, profile settings, and workspace data.' },
 ]
 
 export const battleRows = [

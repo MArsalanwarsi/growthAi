@@ -4,7 +4,7 @@ import PremiumPieChart from '@/components/charts/PremiumPieChart';
 import PageHeader from '@/components/common/PageHeader';
 import MetricCard from '@/components/dashboard/MetricCard';
 import { adsSnapshot, contentMix, engagementTrend, trafficTrends } from '@/data/mockData';
-import { Brain, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
+import { Brain, CheckCircle2, Zap } from 'lucide-react';
 
 const postingFrequency = [
   { name: 'Mon', you: 2, leader: 5 },

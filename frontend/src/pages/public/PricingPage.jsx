@@ -11,7 +11,7 @@ function PricingPage() {
           centered
           eyebrow="Pricing"
           title="Premium intelligence plans for every growth stage"
-          description="These cards are ready for future billing integration while staying frontend-only today."
+          description="Select a plan to create a workspace with matching module access."
         />
         <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           {pricingPlans.map((plan) => <PricingCard key={plan.name} plan={plan} />)}
