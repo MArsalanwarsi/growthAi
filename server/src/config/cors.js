@@ -6,7 +6,7 @@ export const corsConfig = {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [env.corsOrigin, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+    const allowedOrigins = [env.corsOrigin, 'http://localhost:5173', 'http://127.0.0.1:5173', 'https://growth-ai-eight.vercel.app'];
     
     if (allowedOrigins.indexOf(origin) !== -1 || env.corsOrigin === '*') {
       callback(null, true);
