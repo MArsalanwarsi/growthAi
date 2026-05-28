@@ -6,6 +6,7 @@ import { corsMiddleware } from './config/cors.js';
 import { securityMiddleware } from './middlewares/security.middleware.js';
 import { globalLimiter } from './middlewares/rateLimit.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { connectDB } from './config/db.js';
 
 // Route Imports
 import authRoutes from './routes/auth.routes.js';
@@ -17,6 +18,20 @@ import reportRoutes from './routes/report.routes.js';
 import alertRoutes from './routes/alert.routes.js';
 
 const app = express();
+
+// Connect Database on-demand for Vercel/serverless environments
+let isConnected = false;
+app.use(async (req, res, next) => {
+  try {
+    if (!isConnected) {
+      await connectDB();
+      isConnected = true;
+    }
+  } catch (error) {
+    console.error('Database connection middleware error:', error);
+  }
+  next();
+});
 
 // Security Middlewares
 app.use(securityMiddleware());

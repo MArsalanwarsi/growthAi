@@ -6,9 +6,18 @@ export const corsConfig = {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [env.corsOrigin, 'http://localhost:5173', 'http://127.0.0.1:5173', 'https://growth-ai-eight.vercel.app'];
+    // Normalize origins by removing trailing slashes
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanCorsOrigin = env.corsOrigin ? env.corsOrigin.replace(/\/$/, '') : '';
     
-    if (allowedOrigins.indexOf(origin) !== -1 || env.corsOrigin === '*') {
+    const allowedOrigins = [
+      cleanCorsOrigin,
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'https://growth-ai-eight.vercel.app'
+    ];
+    
+    if (allowedOrigins.indexOf(cleanOrigin) !== -1 || env.corsOrigin === '*') {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
